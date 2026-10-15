@@ -2,6 +2,42 @@ html {
   scroll-behavior: smooth;
 }
 
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.32s;
+  animation-timing-function: ease;
+}
+
+@supports not (view-transition-name: none) {
+  body {
+    animation: page-enter 0.28s ease;
+  }
+
+  html.is-leaving body {
+    animation: page-leave 0.18s ease forwards;
+  }
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes page-leave {
+  to {
+    opacity: 0;
+  }
+}
+
 #inicio,
 #escritorio,
 #areas,
@@ -19,9 +55,83 @@ html {
   padding-top: 4.8em;
 }
 
+.navbar-brand .icon-gavel {
+  display: inline-block;
+  transform-origin: 72% 82%;
+}
+
+.navbar-brand .icon-gavel.is-striking {
+  animation: gavel-strike 2.15s cubic-bezier(0.22, 0.61, 0.36, 1) 1 both;
+}
+
+@keyframes gavel-strike {
+  0% {
+    transform: translate(-50%) rotate(0deg);
+  }
+
+  10% {
+    transform: translate(-50%) rotate(-52deg);
+  }
+
+  16% {
+    transform: translate(-50%) rotate(18deg);
+  }
+
+  22% {
+    transform: translate(-50%) rotate(-8deg);
+  }
+
+  28% {
+    transform: translate(-50%) rotate(0deg);
+  }
+
+  38% {
+    transform: translate(-50%) rotate(-52deg);
+  }
+
+  44% {
+    transform: translate(-50%) rotate(18deg);
+  }
+
+  50% {
+    transform: translate(-50%) rotate(-8deg);
+  }
+
+  56% {
+    transform: translate(-50%) rotate(0deg);
+  }
+
+  66% {
+    transform: translate(-50%) rotate(-52deg);
+  }
+
+  72% {
+    transform: translate(-50%) rotate(18deg);
+  }
+
+  78% {
+    transform: translate(-50%) rotate(-8deg);
+  }
+
+  86%,
+  100% {
+    transform: translate(-50%) rotate(0deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  @view-transition {
+    navigation: none;
+  }
+
+  body,
+  html.is-leaving body,
+  .navbar-brand .icon-gavel {
+    animation: none;
   }
 }
 
