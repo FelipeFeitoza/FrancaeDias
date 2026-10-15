@@ -1,0 +1,38 @@
+:root,
+[data-bs-theme="light"] {
+  --bs-primary: #b99566;
+  --bs-primary-rgb: 185, 149, 102;
+  --bs-primary-text-emphasis: rgb(29.0196078431%, 23.3725490196%, 16%);
+  --bs-primary-bg-subtle: rgb(94.5098039216%, 91.6862745098%, 88%);
+  --bs-primary-border-subtle: rgb(89.0196078431%, 83.3725490196%, 76%);
+  --bs-link-color: #b99566;
+  --bs-link-color-rgb: 185, 149, 102;
+  --bs-link-hover-color: rgb(58.0392156863%, 46.7450980392%, 32%);
+  --bs-link-hover-color-rgb: 148, 119, 82;
+  --marca: #b99566;
+  --marca-escura: #8a6a3e;
+  --marca-hover: #6f5430;
+}
+
+.navbar-brand {
+  background: var(--marca) !important;
+}
+
+.navbar-brand:after {
+  border-color: var(--marca) transparent transparent transparent !important;
+}
+
+.heading-section .subheading,
+.ftco-navbar-light .navbar-nav > .nav-item > .nav-link:hover,
+.ftco-navbar-light.scrolled.awake .nav-item.active > .nav-link,
+.ftco-navbar-light.scrolled.awake .nav-link:hover {
+  color: var(--marca) !important;
+}
+
+#map .map-pin {
+  background: var(--marca) !important;
+}
+
+#map .kit-map__actions a {
+  color: #fff !important;
+}
