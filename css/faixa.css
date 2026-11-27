@@ -2,14 +2,20 @@ html {
   scroll-behavior: smooth;
 }
 
-@view-transition {
-  navigation: auto;
+/* Bootstrap usa overflow-x:clip; forçar eixo Y rolável evita âncora “morta”. */
+html,
+body {
+  overflow-x: clip;
+  overflow-y: auto;
 }
 
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 0.32s;
-  animation-timing-function: ease;
+/* View Transition em navegação cross-page quebrava links com #hash no preview. */
+@supports (view-transition-name: none) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.28s;
+    animation-timing-function: ease;
+  }
 }
 
 @supports not (view-transition-name: none) {
@@ -47,7 +53,8 @@ html {
 }
 
 #areas.ftco-section {
-  padding-bottom: 4.8em;
+  padding-top: 3em;
+  padding-bottom: 3em;
 }
 
 #equipe.ftco-section {
@@ -184,6 +191,9 @@ html {
 
 #contato .wrap-about .heading-section h2 {
   margin: 0.15rem 0 0 !important;
+  font-size: 1.45rem;
+  line-height: 1.3;
+  font-weight: 600;
 }
 
 #contato .info-contact {
@@ -348,5 +358,30 @@ html {
   .area-banner__prev,
   .area-banner__next {
     display: none;
+  }
+
+  /* Home: hero preenche a tela; evita crop “só uma faixa” da foto */
+  #inicio.home-slider,
+  #inicio.home-slider .js-fullheight,
+  #inicio .slider-item {
+    height: 100svh !important;
+    min-height: 100svh !important;
+    max-height: none !important;
+  }
+
+  #inicio .slider-item {
+    background-size: cover !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
+  }
+
+  /* Cards de áreas: largura total, altura proporcional no mobile */
+  #areas .block-20 {
+    width: 100%;
+    height: auto;
+    min-height: 14rem;
+    aspect-ratio: 16 / 10;
+    background-size: cover !important;
+    background-position: center center !important;
   }
 }
