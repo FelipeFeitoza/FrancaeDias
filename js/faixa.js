@@ -1,5 +1,7 @@
 function pageKey(pathname) {
-  return pathname.replace(/\/index\.html$/i, "/");
+  const path = pathname.replace(/\/+$/, "") || "/";
+  if (/\/index\.html$/i.test(path)) return path.replace(/\/index\.html$/i, "/") || "/";
+  return path;
 }
 
 function closeMobileNav() {
@@ -32,16 +34,38 @@ function afterMenuClosed(done) {
   window.setTimeout(run, 400);
 }
 
-function scrollToHash(hash) {
+function navOffset() {
+  const nav = document.getElementById("ftco-navbar");
+  return (nav ? nav.getBoundingClientRect().height : 0) + 12;
+}
+
+function scrollToHash(hash, { force } = {}) {
   const id = decodeURIComponent(String(hash || "").replace(/^#/, ""));
-  if (!id) return;
+  if (!id) return false;
   const target = document.getElementById(id);
-  if (!target) return;
+  if (!target) return false;
+
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
-  if (window.location.hash !== "#" + id) {
-    history.pushState(null, "", "#" + id);
+  const y =
+    target.getBoundingClientRect().top +
+    (window.pageYOffset || document.documentElement.scrollTop || 0) -
+    navOffset();
+
+  window.scrollTo({ top: Math.max(0, y), behavior: reduce ? "auto" : "smooth" });
+
+  if (force || window.location.hash !== "#" + id) {
+    history.replaceState(null, "", "#" + id);
   }
+  return true;
+}
+
+function applyInitialHash() {
+  if (!window.location.hash) return;
+  const run = () => scrollToHash(window.location.hash, { force: true });
+  run();
+  window.requestAnimationFrame(run);
+  window.setTimeout(run, 120);
+  window.setTimeout(run, 450);
 }
 
 function strikeGavel() {
@@ -54,13 +78,16 @@ function strikeGavel() {
 }
 
 document.addEventListener("DOMContentLoaded", strikeGavel);
+document.addEventListener("DOMContentLoaded", applyInitialHash);
 window.addEventListener("pageshow", strikeGavel);
+window.addEventListener("pageshow", applyInitialHash);
+window.addEventListener("hashchange", () => scrollToHash(window.location.hash, { force: true }));
 
 document.addEventListener("click", (event) => {
   if (event.defaultPrevented || event.button !== 0) return;
   if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
 
-  const link = event.target.closest("a[href]");
+  const link = event.target.closest && event.target.closest("a[href]");
   if (!link || link.target === "_blank" || link.hasAttribute("download")) return;
 
   let url;
@@ -70,28 +97,21 @@ document.addEventListener("click", (event) => {
     return;
   }
 
-  const inMenu = Boolean(link.closest("#ftco-navbar"));
-  const sameDocument =
-    url.origin === window.location.origin &&
-    pageKey(url.pathname) === pageKey(window.location.pathname);
+  if (url.origin !== window.location.origin) return;
 
+  const sameDocument = pageKey(url.pathname) === pageKey(window.location.pathname);
+
+  // Mesma página + âncora: rolar sem recarregar
   if (sameDocument && url.hash) {
     event.preventDefault();
-    afterMenuClosed(() => scrollToHash(url.hash));
+    afterMenuClosed(() => scrollToHash(url.hash, { force: true }));
     return;
   }
 
-  if (inMenu) closeMobileNav();
-
-  if (url.origin !== window.location.origin) return;
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  if (typeof document.startViewTransition === "function") return;
-
-  event.preventDefault();
-  document.documentElement.classList.add("is-leaving");
-  window.setTimeout(() => {
-    window.location.href = link.href;
-  }, 180);
+  // Outra página: fecha o menu e deixa a navegação nativa (preserva #hash)
+  if (!sameDocument && link.closest("#ftco-navbar")) {
+    closeMobileNav();
+  }
 });
 
 document.addEventListener("DOMContentLoaded", () => {
